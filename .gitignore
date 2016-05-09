@@ -1,0 +1,3 @@
+/do-not-include/*
+/node_modules/
+/scripts/api_key.json

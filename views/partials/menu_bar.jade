@@ -1,0 +1,30 @@
+.menuBar
+  .menuItem.overallBox
+    strong.menuText Overall Hiscores
+    br
+    form(action="/overall/experience" method="get")
+      input.overallButton(type="submit" value="Overall By XP")
+    form(action="/overall/level" method="get")
+      input.overallButton(type="submit" value="Overall By Level")
+  .menuItem.championBox
+    strong.menuText Champ Hiscores
+    br
+    form(action="/champion" method="get")
+      include champion_select_box
+      input.overallButton(type="submit" value="Search")
+  .menuItem.compareUsersBox
+    strong.menuText Compare
+    br
+    form(method="get" action="/compare")
+      input.compareUsersInput(type="text" name="summoner1" value="#{(summoner1_data && summoner1_data.name && summoner1_data.name.toLowerCase().replace(/\s/g, '')) || ''}")
+      br
+      input.compareUsersInput(type="text" name="summoner2" value="#{(summoner2_data && summoner2_data.name && summoner2_data.name.toLowerCase().replace(/\s/g, '')) || ''}")
+      br
+      input.compareUsersSubmit(type="submit" value="Compare")
+  .menuItem.searchBox
+    strong.menuText Search By Name
+    br
+    form(method="get" action="/personal")
+      input.compareUsersInput(type="text" name="summoner" value="#{(summoner_data && summoner_data.name && summoner_data.name.toLowerCase().replace(/\s/g, '')) || ''}")
+      br
+      input.compareUsersSubmit(type="submit" value="Search")

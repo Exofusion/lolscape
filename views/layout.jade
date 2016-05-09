@@ -1,0 +1,12 @@
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    include partials/script_includes
+  body
+    include partials/menu_bar
+    .pageContent
+      block content
+
+  include partials/google_analytics

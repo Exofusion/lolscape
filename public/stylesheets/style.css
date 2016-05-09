@@ -1,0 +1,232 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background: black;
+  color: white;
+  font-family: Arial,Helvetica,sans-serif;
+  background-image: url(../images/bg.jpg);
+  background-position: top center;
+  background-repeat: repeat-y;
+  text-align: center;
+  margin: 0;
+  min-width: 960px;
+  overflow-y: scroll;
+}
+
+a {
+  color: #000000;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.centerDiv {
+  margin: 0 auto;
+  overflow: hidden;
+  position: relative;
+  display: table;
+}
+
+.text-align-left {
+  text-align: left !important;
+}
+
+.text-align-right {
+  text-align: right !important;
+}
+
+.text-align-center {
+  text-align: center !important;
+}
+
+.menuBar {
+  position: relative;
+  margin: 0 auto;
+}
+
+.pageContent {
+  margin-top: 10px;
+}
+
+.menuItem {
+  display: inline-block;
+  margin: 0 20px;
+}
+
+.menuText {
+  text-align: center;
+  color: #d9c27e;
+}
+
+.overallBox {
+  vertical-align: top;
+  background: url(/images/search_box.gif) no-repeat;
+  width: 132px;
+  height: 70px;
+  padding: 15px 10px;
+}
+
+.championBox {
+  vertical-align: top;
+  background: url(/images/search_box.gif) no-repeat;
+  width: 132px;
+  height: 70px;
+  padding: 15px 10px;
+}
+
+.championSelectBox,
+.compareUsersInput,
+.compareUsersSubmit {
+  margin-top: 5px;
+  width: 110px;
+}
+
+.overallButton {
+  margin-top: 5px;
+  width: 115px;
+}
+
+.searchBox {
+  vertical-align: top;
+  background: url(/images/search_box.gif) no-repeat;
+  width: 132px;
+  height: 70px;
+  padding: 15px 10px;
+}
+
+/* Background image is 152px x 126px */
+.compareUsersBox {
+  background:url(/images/compare_users.gif) no-repeat;
+  width: 132px;
+  height: 105px;
+  padding: 15px 10px;
+}
+
+.scroll {
+}
+
+.scroll-bgimg {
+  width: 379px;
+  position: relative;
+  background: url('/images/scroll_bg.gif') repeat-y;
+  margin: -5px 0;
+  line-height: 18px;
+  color: #000;
+}
+
+.scroll-wide {
+  width: 735px;
+  background-color: #C2AB79;
+  margin: 0 10px 0 15px;
+  position: relative;
+}
+
+.scroll-bgimg-wide {
+  width: 745px;
+  position: relative;
+  margin: 0 -5px;
+  background-image: url('/images/scroll_bg_wide.gif');
+  background-repeat: repeat-y;
+  top: -20px;
+}
+
+.scroll-content {
+  color: #000000;
+  position: relative;
+  margin: 0 -5px;
+}
+
+img.scroll-top-wide {
+  position: relative;
+  padding: 0;
+  margin: 0;
+  z-index: 100;
+  display: block;
+}
+
+img.scroll-bottom-wide {
+  position: relative;
+  padding: 0;
+  margin: 0;
+  top: -30px;
+  display: block;
+}
+
+.scroll-content-wide {
+  position: relative;
+  padding: 25px 10px;
+  color: #000000;
+  position: relative;
+  margin: 0 5px;
+}
+
+.comparisonSummonerWrapper {
+  width: 100%;
+}
+
+.comparisonSummoner {
+  text-align: center;
+  width: 33%;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.comparisonSwap {
+  position: relative;
+  top: -5px;
+  display: inline-block;
+}
+
+td.championName {
+  text-align: left !important;
+  position: relative;
+  top: -2px;
+}
+
+.championAvatar {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+}
+
+.summonerProfileIcon {
+  width: 20px;
+  height: 20px;
+  padding-right: 5px;
+}
+
+.summonerName {
+  position: relative;
+  top: -3px;
+}
+
+#overall_table {
+  margin: 0 auto;
+  text-align: right;
+  width: 90%;
+}
+
+
+#personal_table {
+  margin: 0 auto;
+  text-align: right;
+  width: 80%;
+}
+
+#comparison_table {
+  margin: 0 auto;
+  text-align: right;
+}
+
+#comparison_table th,
+#overall_table th,
+#personal_table th  {
+  text-align: right;
+  padding: 5px 3px;
+}
+
+#comparison_table td,
+#overall_table td,
+#personal_table td {
+  text-align: right;
+  padding: 0 2px;
+}

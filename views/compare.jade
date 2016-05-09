@@ -1,0 +1,96 @@
+extends layout
+
+block content
+  include partials/view_functions
+  script.
+    $(document).ready(function() 
+    { 
+        $("#comparison_table").tablesorter(); 
+    });
+    
+  .scrollWrapper.centerDiv
+    img.scroll-top-wide(src="/images/scroll_top_wide.gif")
+    .scroll-wide
+      .scroll-bgimg-wide
+        .scroll-content-wide
+            br
+            div #{addCommas(total_summoners)} total summoners
+            br
+            
+            .comparisonSummonerWrapper
+              .comparisonSummoner
+                if (summoner1_data)
+                  img.summonerProfileIcon(src='http://ddragon.leagueoflegends.com/cdn/6.9.1/img/profileicon/#{summoner1_data.profileIconId}.png')
+                span.summonerName #{(summoner1_data && summoner1_data.name) || "(Summoner Not Found)"}
+              .comparisonSwap
+                a(href="../#{summoner2_data && summoner2_data.id}/#{summoner1_data && summoner1_data.id}") ❮ Swap Summoners ❯
+              .comparisonSummoner
+                if (summoner2_data)
+                  img.summonerProfileIcon(src='http://ddragon.leagueoflegends.com/cdn/6.9.1/img/profileicon/#{summoner2_data.profileIconId}.png')
+                span.summonerName #{(summoner2_data && summoner2_data.name) || "(Summoner Not Found)"}
+            
+            if champ_mastery_data
+              table#comparison_table
+                thead
+                  tr
+                    th
+                    th.text-align-left Champion
+                    th Rank
+                    th Level
+                    th XP
+                    th
+                    th
+                    th.text-align-left Champion
+                    th Rank
+                    th Level
+                    th XP
+
+                if (champ_mastery_data.length > 0)
+                  tbody.avoid-sort
+                    tr
+                      td.championAvatar
+                      td.championName
+                        strong Overall
+                      td= champ_mastery_data[0].s1_championRank && addCommas(champ_mastery_data[0].s1_championRank)
+                      td= champ_mastery_data[0].s1_championLevel && addCommas(champ_mastery_data[0].s1_championLevel)
+                      td= champ_mastery_data[0].s1_championPoints && addCommas(champ_mastery_data[0].s1_championPoints)
+                      if champ_mastery_data[0].s1_better
+                        td
+                          img(src="/images/arrowup.gif")
+                      else
+                        td
+                          img(src="/images/arrowdown.gif")
+                      td.championAvatar
+                      td.championName
+                        strong Overall
+                      td= champ_mastery_data[0].s2_championRank && addCommas(champ_mastery_data[0].s2_championRank)
+                      td= champ_mastery_data[0].s2_championLevel && addCommas(champ_mastery_data[0].s2_championLevel)
+                      td= champ_mastery_data[0].s2_championPoints && addCommas(champ_mastery_data[0].s2_championPoints)
+
+                tbody
+                  each val in champ_mastery_data
+                    if val.championId > 0
+                      tr
+                        td
+                          img.championAvatar(src="/images/champion/tiny/#{champ_mapping[val.championId].id}.png")
+                        td.championName
+                          strong= champ_mapping[val.championId].name
+                        td= val.s1_championRank && addCommas(val.s1_championRank)
+                        td= val.s1_championLevel && addCommas(val.s1_championLevel)
+                        td= val.s1_championPoints && addCommas(val.s1_championPoints)
+                        if val.s1_better
+                          td
+                            img(src="/images/arrowup.gif")
+                            span(style="display:none;") 1
+                        else
+                          td
+                            img(src="/images/arrowdown.gif")
+                            span(style="display:none;") 0
+                        td
+                          img.championAvatar(src="/images/champion/tiny/#{champ_mapping[val.championId].id}.png")
+                        td.championName
+                          strong= champ_mapping[val.championId].name
+                        td= val.s2_championRank && addCommas(val.s2_championRank)
+                        td= val.s2_championLevel && addCommas(val.s2_championLevel)
+                        td= val.s2_championPoints && addCommas(val.s2_championPoints)
+    img.scroll-bottom-wide(src="/images/scroll_bottom_wide.gif")

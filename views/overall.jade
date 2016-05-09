@@ -1,0 +1,35 @@
+extends layout
+
+
+block content
+  include partials/view_functions
+
+  .centerDiv
+    .scrollWrapper
+      img.scroll-top(src="/images/scroll_top.gif")
+      .scroll
+        .scroll-bgimg
+          .scroll-content
+              br
+              div #{addCommas(total_summoners)} total summoners
+              br
+              
+              table#overall_table
+                tr
+                  th.text-align-center(colspan="4") Overall Highscores By #{page_name}
+                tr
+                  th Rank
+                  th.text-align-left Summoner
+                  th Level
+                  th XP
+                each val in overall_data
+                  tr
+                      td
+                        strong= addCommas(val.rank)
+                      td.text-align-left
+                        img.summonerProfileIcon(src='http://ddragon.leagueoflegends.com/cdn/6.9.1/img/profileicon/#{val.profile_icon_id}.png')
+                        a.summonerName(href="/personal?summoner=#{val.name}") #{val.name}
+                      td= addCommas(val.overall_level)
+                      td= addCommas(val.overall_points)
+          br
+      img.scroll-bottom(src="/images/scroll_bottom.gif")

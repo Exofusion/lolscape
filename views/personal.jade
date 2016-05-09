@@ -1,0 +1,53 @@
+extends layout
+
+block content
+  include partials/view_functions
+  script.
+    $(document).ready(function() 
+    { 
+        $("#personal_table").tablesorter(); 
+    }); 
+
+  .centerDiv
+    .scrollWrapper
+      img.scroll-top(src="/images/scroll_top.gif")
+      .scroll
+        .scroll-bgimg
+          .scroll-content
+            br
+            div #{addCommas(total_summoners)} total summoners
+            br
+            strong Personal scores for #{summoner_data && summoner_data.name}
+            
+            if champ_mastery_data
+              table#personal_table
+                thead
+                  tr
+                    th
+                    th.text-align-left Champion
+                    th Rank
+                    th Level
+                    th XP
+                if (champ_mastery_data.length > 0)
+                  tbody.avoid-sort
+                    tr
+                      td.championAvatar
+                      td.championName
+                        strong Overall
+                      td= addCommas(champ_mastery_data[0].championRank)
+                      td= addCommas(champ_mastery_data[0].championLevel)
+                      td= addCommas(champ_mastery_data[0].championPoints)
+                tbody
+                  each val in champ_mastery_data
+                    if val.championId > 0
+                      tr
+                        td
+                          img.championAvatar(src="/images/champion/tiny/#{champ_mapping[val.championId].id}.png")
+                        td.championName
+                          a(href="/champion/#{val.championId}")= champ_mapping[val.championId].name
+                        td= addCommas(val.championRank)
+                        td= addCommas(val.championLevel)
+                        td= addCommas(val.championPoints)
+            br
+
+      img.scroll-bottom(src="/images/scroll_bottom.gif")
