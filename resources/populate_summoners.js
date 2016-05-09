@@ -1,5 +1,5 @@
-var cache_layer = require('./cache_layer');
-var riot_api = require('./riot_api');
+var cache_layer = require('../scripts/cache_layer');
+var riot_api = require('../scripts/riot_api');
 var async = require('async');
 
 var region = 'na';

@@ -28,7 +28,7 @@ block content
                         strong= addCommas(val.rank)
                       td.text-align-left
                         img.summonerProfileIcon(src='http://ddragon.leagueoflegends.com/cdn/6.9.1/img/profileicon/#{val.profile_icon_id}.png')
-                        a.summonerName(href="/personal?summoner=#{val.name}") #{val.name}
+                        a.summonerName(href="/personal/#{val.summoner_id}") #{val.name}
                       td= addCommas(val.overall_level)
                       td= addCommas(val.overall_points)
           br
