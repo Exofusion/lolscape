@@ -80,7 +80,7 @@ CREATE UNIQUE INDEX champion_rank
   (champion_id, champion_points DESC NULLS LAST, region_id, summoner_id);
 ALTER TABLE public.summoner_champ_mastery CLUSTER ON champion_rank;
 ```
-The ordering of this index is extremely important for performance.  By ordering the descending champion point entries, partitioned by each champion_id, we get fast queries for the leaderboard lookups.  By saving our total values for each summoner's champion as champion 0, we also get extremely fast overall score lookup without needing to sum each entry on the fly.
+The ordering of this index is extremely important for performance.  By ordering the descending champion point entries, partitioned by each champion_id, we get fast queries for the leaderboard lookups.  By saving our total values for each summoner's champion as champion 0, we also get extremely fast overall score lookup without needing to sum each entry on the fly.  Because this index is utilized so heavily, it's important to periodically run "CLUSTER summoner_champ_mastery;" so PostgreSQL can move around rows to the optimal locations and keep lookup times low.
 
 ### Node Initialization
 Luckily this is where Node really shines.
