@@ -4,7 +4,7 @@
 League of Legends is at its core a skill based game, the primary way to measure skill is by ELO and ranked progression.  But that isn't the only way to play, some people have no interest in the ranked ladder at all.  With the introduction of Champion Mastery points, the first thing I thought of were the days of old school RuneScape, playing for hours to climb the highscores with XP gains.  Currently there isn't a great way to view those summoners who have put in the grind to top the charts.  LoLScape exists to fill this void, and gives a platform for those long hours of play to be recognized.
 
 ## Inspiration
-This project is an homage to the old RuneScape 2007 era hiscore page.  Hopefully this conjures up some nostalgia for other RuneScape players who spent a good chunk of their time on the XP grind, comparing themselves to others, and calculating how long to get the coveted level 99.
+This project is an homage to the old RuneScape 2007 era hiscore page.  Hopefully this conjures up some nostalgia for other RuneScape players who spent a good chunk of their time on the XP grind, comparing their skills to others, and calculating how long to get the coveted level 99.
 
 ## Site Sections
 ### Overall Hiscores
