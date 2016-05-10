@@ -15,7 +15,8 @@ router.get('/', function(req, res, next) {
         return res.redirect('/personal/'+summoner_data.id);
       } else {
         // Summoner not found
-        return res.redirect('/');
+        return res.render('error', { message: "The summoner name you entered could not be found.",
+                                     error: { status: "404" }});
       }
     });
   } else {
