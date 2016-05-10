@@ -1,4 +1,4 @@
-# LoLScape
+# LoLScape (http://lolscape.com)
 
 ## Description
 League of Legends is at its core a skill based game, the primary way to measure skill is by ELO and ranked progression.  But that isn't the only way to play, some people have no interest in the ranked ladder at all.  With the introduction of Champion Mastery points, the first thing I thought of were the days of old school RuneScape, playing for hours to climb the highscores with XP gains.  Currently there isn't a great way to view those summoners who have put in the grind to top the charts.  LoLScape exists to fill this void, and gives a platform for those long hours of play to be recognized.
