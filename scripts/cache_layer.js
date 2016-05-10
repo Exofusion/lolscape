@@ -1,3 +1,9 @@
+// cache_layer
+//
+// This class allows indirect access to the API.  It's designed in such a way
+// that the response to every call to "riot_api" is cached in the local database,
+// to aid in leaderboard lookup.
+
 var pg = require('pg');
 var async = require('async');
 var riot_api = require('./riot_api');
@@ -22,20 +28,26 @@ exports.updateSummonerDataCache = updateSummonerDataCache;
 var regionIdToName = [ '',
                        'na' ];
 
+// This function simply normalizes a summoner name for lookup, since letter-case and spacing is ignored
+// on Riot's end.
+// Ex: "Null Pointer" => "nullpointer"
 function cleanName(name) {
   return name.toLowerCase().replace(/\s/g, '');
 }
 
+// Fetch and cache the summoner JSON data using a summoner name
 function getSummonerDataByName(region_id, summoner_name, callback) {
   if(DEBUG) console.log('getSummonerDataByName()');
   getSummonerDataByNameFromAPI(region_id, summoner_name, function(summoner_data) { callback(summoner_data); });
 }
 
+// Fetch and cache the summoner JSON data using a summoner ID
 function getSummonerDataById(region_id, summoner_id, callback) {
   if(DEBUG) console.log('getSummonerDataById()');
   getSummonerDataByIdFromAPI(region_id, summoner_id, function(summoner_data) { callback(summoner_data); });
 }
 
+// Fetch and cache summoner entries for a summoner name
 function getMasteryEntriesByName(region_id, summoner_name, callback) {
   if(DEBUG) console.log('getSummonerEntriesByName()');
   if (summoner_name.length > 0) {
@@ -47,6 +59,7 @@ function getMasteryEntriesByName(region_id, summoner_name, callback) {
   }
 }
 
+// Fetch and cache summoner entries for a summoner ID
 function getMasteryEntriesById(region_id, summoner_id, callback) {
   if(DEBUG) console.log('getMasteryEntriesById()');
   if (summoner_id != null) {
@@ -56,6 +69,7 @@ function getMasteryEntriesById(region_id, summoner_id, callback) {
   }
 }
 
+// Retrieves the global ranking on a champion given a champion_points input
 function getChampRanking(champion_points, champion_id, callback) {
   if(DEBUG) console.log(`getChampRanking(${champion_points}, ${champion_id})`);
   pg.connect(connectionString, function(err, client, done) {
@@ -63,10 +77,10 @@ function getChampRanking(champion_points, champion_id, callback) {
         return console.error('error fetching client from pool', err);
       }
       
-      // Old Query just in case I need it back
+      // Old Query just in case I need it back.  Unfortunately the window function ROW_NUMBER() wouldn't choose my index.
       /*
           SELECT r.summoner_id, r.region_id, r.champion_id, r.champion_rank \
-                        FROM (SELECT summoner_id, region_id, champion_id, ROW_NUMBER() OVER (ORDER BY champion_points DESC) AS champion_rank \
+                        FROM (SELECT summoner_id, region_id, champion_id, ROW_NUMBER() OVER (ORDER BY champion_points DESC NULLS LAST) AS champion_rank \
                               FROM summoner_champ_mastery WHERE champion_id=$3) r \
                         WHERE summoner_id=$1 AND region_id=$2
       */
@@ -92,6 +106,9 @@ function getChampRanking(champion_points, champion_id, callback) {
   });
 }
 
+// Commonly called function to get the total number of summoners with champ mastery data in the database
+// Note: Since all summoners with at least one champion mastery entry will have an overall total saved as champion_id 0,
+//       passing 0 for champion_id is an easy way to get the total number of summoners with mastery data.
 function getTotalSummoners(champion_id, callback) {
   if(DEBUG) console.log('getTotalSummoners()');
   pg.connect(connectionString, function(err, client, done) {
@@ -116,6 +133,8 @@ function getTotalSummoners(champion_id, callback) {
   });
 }
 
+// Get the top 100 summoners for a specific champion, or champion 0 for all champions
+// order_by should contain the column name for sorting
 function getOverallHighscores(champion_id, order_by, callback) {
   if(DEBUG) console.log('getOverallHighscores');
   pg.connect(connectionString, function(err, client, done) {
@@ -136,6 +155,7 @@ function getOverallHighscores(champion_id, order_by, callback) {
   });
 }
 
+// Call to manually skip fetching from the API for summoner data, and only use what's available in the local database
 function getSummonerDataFromDB(region_id, summoner_id, callback) {
   if(DEBUG) console.log('getSummonerDataFromDB()');
   pg.connect(connectionString, function(err, client, done) {
@@ -160,6 +180,7 @@ function getSummonerDataFromDB(region_id, summoner_id, callback) {
   });
 }
 
+// Call to manually fetch summoner data from the API, and update the local database with the response afterwards
 function getChampMasteryDataFromAPI(region_id, summoner_id, callback) {
   if(DEBUG) console.log('getChampMasteryDataFromAPI()');
   riot_api.getAllChampionMasteryEntries(regionIdToName[region_id], summoner_id, function(champ_mastery_data) {
@@ -207,6 +228,7 @@ function getSummonerDataByIdFromAPI(region_id, summoner_id, callback) {
   });
 }
 
+// Uses the JSON object array for all champion mastery entries for a summoner to update their entries in the local database
 function updateChampMasteryCache(region_id, champ_mastery_data, callback) {
   if(DEBUG) console.log('updateChampMasteryCache()');
   if ((champ_mastery_data && champ_mastery_data.length) > 0) {
@@ -243,6 +265,7 @@ function updateChampMasteryCache(region_id, champ_mastery_data, callback) {
           console.log(err);
         }
         
+        // Overall champion mastery points and levels are saved under champion_id 0 to allow for speedy lookup later
         client.query('INSERT INTO summoner_champ_mastery(summoner_id, region_id, champion_id, champion_points, champion_level, last_updated) VALUES ($1, $2, $3, $4, $5, NOW()) ON CONFLICT ON CONSTRAINT summoner_champ_mastery_pkey DO \
                       UPDATE SET champion_points=$4, champion_level=$5, last_updated=NOW() WHERE summoner_champ_mastery.summoner_id=$1 AND summoner_champ_mastery.region_id=$2 AND summoner_champ_mastery.champion_id=$3;',
                      [summonerId, region_id, 0, overall_points, overall_level],

@@ -97,6 +97,11 @@ function parseAndSort(region_id, json, callback) {
   });
 }
 
+// Input champion mastery entries must be sorted by champion_id.
+// The knowledge of this sorting is utilized by two indexes that step through
+// each champion until all champions have been merged into a single record
+// with both summoner1 and summoner2's champion mastery data.  This process
+// can be thought of as a type of zipper merge.
 function merge(summoner1_parsed, summoner2_parsed) {
   var mergedResult = [];
   
@@ -160,6 +165,7 @@ function merge(summoner1_parsed, summoner2_parsed) {
   return mergedResult;
 }
 
+// This really only exists to try to deal with callback hell
 function prepare(summoner1_region, summoner1_data, summoner2_region, summoner2_data, callback) {
   parseAndSort(summoner1_region, summoner1_data, function(summoner1_parsed) {
     parseAndSort(summoner2_region, summoner2_data, function(summoner2_parsed) {

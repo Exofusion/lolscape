@@ -6,11 +6,12 @@ exports.parseOverall = parseOverall;
 function parseOverall(overall_highscores, callback) {
   addSummonerData(overall_highscores, function(overall_summoner_data) {
     var parsed_overall = addRankings(overall_summoner_data);
-    
     callback(parsed_overall);
   });
 };
 
+// Since the input rows will already be ordered by champion points in descending order,
+// simply use their index in the array to add the ranking
 function addRankings(overall_highscores) {
   for (var i=0; i<overall_highscores.length; i++) {
     overall_highscores[i].rank = i+1;
