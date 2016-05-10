@@ -18,7 +18,7 @@ This page lets you view global champion rankings and experience for a specific s
 
 ## Tech Stack
 - **Web Server**: Node ExpressJS
-  - I chose ExpressJS for its low overhead, and quick setup.  Since I knew I wouldn't need the extra features of more robust web server, this suited my needs perfectly.
+  - I chose ExpressJS for its low overhead, and quick setup.  Since I knew I wouldn't need the extra features of a more bloated web server, this suited my needs perfectly.
 - **Database**: PostgreSQL 9.5
   - I went with PostgreSQL because of its ease of setup on Linux.  After an "apt-get" and one-line config-file modification, it's ready to go!
 - **Cloud Hosting**: DigitalOcean Ubuntu 14.04 Droplet
