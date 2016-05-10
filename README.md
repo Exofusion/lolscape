@@ -20,6 +20,7 @@ This page lets you view global champion rankings and experience for a specific s
   - I went with PostgreSQL because of its ease of setup on Linux.  After an "apt-get" and one-line config-file modification, it's ready to go!
 - **Cloud Hosting**: DigitalOcean Ubuntu 14.04 Droplet
   - I've heard good things about this service, and it did not disappoint for the price.  I initially set the project up in Amazon's AWS ecosystem, but the monthly cost to get instance SSD drives wasn't feasible.  In the event that serious scaling is needed, I'd probably go back to AWS however.
+- **jQuery tablesorter (unofficial fork)**: This jQuery plugin is like magic, with only a little configuration, I was good to go.  I ended up using an unofficial fork because it handled parsing the columns better, and allowed for customizations such as excluding rows from being sorted.  The full documentation and download can be found here (https://mottie.github.io/tablesorter/docs/)
   
 ## Design Philosophy
 This project was set up to be as self-sufficient as possible, with little maintenance required.  Anytime a user is looked up through the API, the resulting data is validated, and the database is updated along with the current timestamp.  Using this timestamp, the project maintainer can decide how often the same summoner should be allowed to fetch new data.  As it stands, each page load tries to get the freshest data, but this can be easily changed.  The only scheduled tasks that need to be run is clustering the tables, which can be automated.
