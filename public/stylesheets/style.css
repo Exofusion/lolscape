@@ -200,6 +200,8 @@ td.championName {
   width: 20px;
   height: 20px;
   padding-right: 5px;
+  position: relative;
+  top: 2px;
 }
 
 .summonerName {
