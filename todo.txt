@@ -1,0 +1,3 @@
+- Simplify "champion_rank" index to exclude summoner_id/region_id
+- Multi-region support
+- Show highest champion grade
