@@ -1,5 +1,8 @@
 extends layout
 
+block head_block
+  title LoLScape - Overall Champion Mastery Hiscores By #{page_name}
+  meta(name="description" content="View the summoners with the overall highest champion mastery points in League of Legends.")
 
 block content
   include partials/view_functions
@@ -16,7 +19,7 @@ block content
               
               table#overall_table
                 tr
-                  th.text-align-center(colspan="4") Overall Highscores By #{page_name}
+                  th.text-align-center(colspan="4") Overall Hiscores By #{page_name}
                 tr
                   th Rank
                   th.text-align-left Summoner

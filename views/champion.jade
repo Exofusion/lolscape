@@ -1,5 +1,8 @@
 extends layout
 
+block head_block
+  title LoLScape - Champion Mastery Hiscores For #{champion_data.name}
+  meta(name="description" content="See the summoners with the highest champion mastery points for #{champion_data.name} in League of Legends.")
 
 block content
   include partials/view_functions

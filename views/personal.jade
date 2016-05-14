@@ -1,5 +1,9 @@
 extends layout
 
+block head_block
+  title LoLScape - Personal Champion Mastery Hiscores For #{summoner_data && summoner_data.name}
+  meta(name="description" content="Display the champion mastery points for a specific summoner in League of Legends.")
+
 block content
   include partials/view_functions
   script.
