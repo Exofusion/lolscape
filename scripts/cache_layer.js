@@ -25,8 +25,19 @@ exports.getSummonerDataFromDB = getSummonerDataFromDB;
 exports.updateChampMasteryCache = updateChampMasteryCache;
 exports.updateSummonerDataCache = updateSummonerDataCache;
 
-var regionIdToName = [ '',
-                       'na' ];
+var region_mapping = [ '',
+                       'na',
+                       'br',
+                       'eune',
+                       'euw',
+                       'jp',
+                       'kr',
+                       'lan',
+                       'las',
+                       'oce',
+                       'tr',
+                       'ru' ];
+exports.region_mapping = region_mapping;
 
 // This function simply normalizes a summoner name for lookup, since letter-case and spacing is ignored
 // on Riot's end.
@@ -70,7 +81,7 @@ function getMasteryEntriesById(region_id, summoner_id, callback) {
 }
 
 // Retrieves the global ranking on a champion given a champion_points input
-function getChampRanking(champion_points, champion_id, callback) {
+function getChampRanking(region_id, champion_points, champion_id, callback) {
   if(DEBUG) console.log(`getChampRanking(${champion_points}, ${champion_id})`);
   pg.connect(connectionString, function(err, client, done) {
       if(err) {
@@ -85,11 +96,20 @@ function getChampRanking(champion_points, champion_id, callback) {
                         WHERE summoner_id=$1 AND region_id=$2
       */
       
-      client.query('SELECT COUNT(1)+1 AS champion_rank \
-                    FROM (SELECT 1 \
-                          FROM summoner_champ_mastery \
-                          WHERE champion_points > $1 AND champion_id = $2) r',
-                    [champion_points, champion_id], function(err, result) {
+      var query_string = 'SELECT COUNT(1)+1 AS champion_rank \
+                          FROM (SELECT 1 \
+                                FROM summoner_champ_mastery \
+                                WHERE champion_points > $1 AND champion_id = $2';
+      var query_params = [champion_points, champion_id];
+      
+      if (region_id > 0) {
+        query_string += ' AND region_id = $3'
+        query_params.push(region_id);
+      }
+      
+      query_string += ') r;';
+      
+      client.query(query_string, query_params, function(err, result) {
         //call `done()` to release the client back to the pool
         done();
 
@@ -109,14 +129,24 @@ function getChampRanking(champion_points, champion_id, callback) {
 // Commonly called function to get the total number of summoners with champ mastery data in the database
 // Note: Since all summoners with at least one champion mastery entry will have an overall total saved as champion_id 0,
 //       passing 0 for champion_id is an easy way to get the total number of summoners with mastery data.
-function getTotalSummoners(champion_id, callback) {
+function getTotalSummoners(region_id, champion_id, callback) {
   if(DEBUG) console.log('getTotalSummoners()');
   pg.connect(connectionString, function(err, client, done) {
       if(err) {
         return console.error('error fetching client from pool', err);
       }
       
-      client.query('SELECT COUNT(1) AS total_summoners FROM summoner_champ_mastery WHERE champion_id=$1;', [champion_id], function(err, result) {
+      var query_string = 'SELECT COUNT(1) AS total_summoners FROM summoner_champ_mastery WHERE champion_id = $1';
+      var query_params = [champion_id];
+      
+      if (region_id > 0) {
+        query_string += ' AND region_id = $2'
+        query_params.push(region_id);
+      }
+      
+      query_string += ';';
+      
+      client.query(query_string, query_params, function(err, result) {
         //call `done()` to release the client back to the pool
         done();
 
@@ -135,14 +165,26 @@ function getTotalSummoners(champion_id, callback) {
 
 // Get the top 100 summoners for a specific champion, or champion 0 for all champions
 // order_by should contain the column name for sorting
-function getOverallHighscores(champion_id, order_by, callback) {
+function getOverallHighscores(region_id, champion_id, order_by, callback) {
   if(DEBUG) console.log('getOverallHighscores');
   pg.connect(connectionString, function(err, client, done) {
     if(err) {
       return console.error('error fetching client from pool', err);
     }
+      
+    var query_string = 'SELECT region_id, summoner_id, champion_points AS overall_points, champion_level AS overall_level \
+                        FROM summoner_champ_mastery \
+                        WHERE champion_id=$1';
+    var query_params = [champion_id];
     
-    client.query('SELECT region_id, summoner_id, champion_points AS overall_points, champion_level AS overall_level FROM summoner_champ_mastery WHERE champion_id=$1 ORDER BY '+order_by+' DESC NULLS LAST LIMIT 100;', [champion_id], function(err, result) {
+    if (region_id > 0) {
+      query_string += ' AND region_id = $2'
+      query_params.push(region_id);
+    }
+    
+    query_string += 'ORDER BY '+order_by+' DESC NULLS LAST LIMIT 100;';
+    
+    client.query(query_string, query_params, function(err, result) {
       //call `done()` to release the client back to the pool
       done();
 
@@ -183,7 +225,7 @@ function getSummonerDataFromDB(region_id, summoner_id, callback) {
 // Call to manually fetch summoner data from the API, and update the local database with the response afterwards
 function getChampMasteryDataFromAPI(region_id, summoner_id, callback) {
   if(DEBUG) console.log('getChampMasteryDataFromAPI()');
-  riot_api.getAllChampionMasteryEntries(regionIdToName[region_id], summoner_id, function(champ_mastery_data) {
+  riot_api.getAllChampionMasteryEntries(region_mapping[region_id], summoner_id, function(champ_mastery_data) {
     if (champ_mastery_data) {
       updateChampMasteryCache(region_id, JSON.parse(champ_mastery_data), callback);
     } else {
@@ -194,7 +236,7 @@ function getChampMasteryDataFromAPI(region_id, summoner_id, callback) {
 
 function getSummonerDataByNameFromAPI(region_id, summoner_name, callback) {
   if(DEBUG) console.log('getSummonerDataFromAPI()');
-  riot_api.getSummonerDataByName(regionIdToName[region_id], summoner_name, function(summoner_data) {
+  riot_api.getSummonerDataByName(region_mapping[region_id], summoner_name, function(summoner_data) {
     if (summoner_data == null) {
       callback(null);
     } else {      
@@ -212,7 +254,7 @@ function getSummonerDataByNameFromAPI(region_id, summoner_name, callback) {
 
 function getSummonerDataByIdFromAPI(region_id, summoner_id, callback) {
   if(DEBUG) console.log('getSummonerDataByIdFromAPI()');
-  riot_api.getSummonerDataById(regionIdToName[region_id], summoner_id, function(summoner_data) {
+  riot_api.getSummonerDataById(region_mapping[region_id], summoner_id, function(summoner_data) {
     if (summoner_data == null) {
       callback(null);
     } else {      

@@ -65,6 +65,13 @@ img.logo_image {
   color: #d9c27e;
 }
 
+.regionSelect {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding: 2px 2px 2px 2px;
+}
+
 .overallBox {
   vertical-align: top;
   background: url(/images/search_box.gif) no-repeat;
@@ -81,14 +88,22 @@ img.logo_image {
   padding: 15px 10px;
 }
 
-.championSelectBox,
-.compareUsersInput,
-.compareUsersSubmit {
-  margin-top: 5px;
-  width: 110px;
+.championSelectBox {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding: 2px 2px 2px 2px;
 }
 
+.championSelectBox,
+.compareUsersInput,
 .overallButton {
+  margin-top: 5px;
+  width: 75px;
+}
+
+.compareUsersSubmit,
+.championSubmit {
   margin-top: 5px;
   width: 115px;
 }
@@ -212,9 +227,8 @@ td.championName {
 #overall_table {
   margin: 0 auto;
   text-align: right;
-  width: 90%;
+  width: 93%;
   position: relative;
-  left: -5px;
 }
 
 #personal_table {

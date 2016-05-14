@@ -14,25 +14,25 @@ block content
         .scroll-bgimg
           .scroll-content
               br
-              div #{addCommas(total_summoners)} #{champion_data.name} players
+              div #{addCommas(total_summoners)} #{champion_data.name} players #{champion_region > 0 ? 'on '+region_mapping[champion_region].toUpperCase() : 'globally'}
               br
               
               table#overall_table
                 tr
-                  th.text-align-center(colspan="4") Highscores For #{champion_data.name}
+                  th.text-align-center(colspan="4") Highscores For #{champion_data.name} #{champion_region > 0 ? 'On '+region_mapping[champion_region].toUpperCase() : 'Globally'}
                 tr
-                  th Rank
+                  th.text-align-center #
                   th.text-align-left Summoner
                   th Level
                   th XP
                 each val in overall_data
                   tr
-                      td
-                        strong= addCommas(val.rank)
-                      td.text-align-left
-                        img.summonerProfileIcon(src='http://ddragon.leagueoflegends.com/cdn/6.9.1/img/profileicon/#{val.profile_icon_id}.png')
-                        a.summonerName(href="/personal/#{val.summoner_id}") #{val.name}
-                      td= addCommas(val.overall_level)
-                      td= addCommas(val.overall_points)
+                    td.text-align-center
+                      strong= addCommas(val.rank)
+                    td.text-align-left
+                      img.summonerProfileIcon(src='http://ddragon.leagueoflegends.com/cdn/6.9.1/img/profileicon/#{val.profile_icon_id}.png')
+                      a.summonerName(href="/personal/#{val.region_id}/#{val.summoner_id}") (#{region_mapping[val.region_id].toUpperCase()}) #{val.name}
+                    td= addCommas(val.overall_level)
+                    td= addCommas(val.overall_points)
           br
       img.scroll-bottom(src="/images/scroll_bottom.gif")

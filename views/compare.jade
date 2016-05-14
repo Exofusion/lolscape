@@ -25,13 +25,13 @@ block content
               .comparisonSummoner
                 if (summoner1_data)
                   img.summonerProfileIcon(src='http://ddragon.leagueoflegends.com/cdn/6.9.1/img/profileicon/#{summoner1_data.profileIconId}.png')
-                span.summonerName #{(summoner1_data && summoner1_data.name) || "(Summoner Not Found)"}
+                span.summonerName (#{region_mapping[summoner1_region].toUpperCase()}) #{(summoner1_data && summoner1_data.name) || "(Summoner Not Found)"}
               .comparisonSwap
-                a(href="../#{summoner2_data && summoner2_data.id}/#{summoner1_data && summoner1_data.id}") ❮ Swap Summoners ❯
+                a(href="../../../#{summoner2_region}/#{summoner2_data && summoner2_data.id}/#{summoner1_region}/#{summoner1_data && summoner1_data.id}") ❮ Swap Summoners ❯
               .comparisonSummoner
                 if (summoner2_data)
                   img.summonerProfileIcon(src='http://ddragon.leagueoflegends.com/cdn/6.9.1/img/profileicon/#{summoner2_data.profileIconId}.png')
-                span.summonerName #{(summoner2_data && summoner2_data.name) || "(Summoner Not Found)"}
+                span.summonerName (#{region_mapping[summoner2_region].toUpperCase()}) #{(summoner2_data && summoner2_data.name) || "(Summoner Not Found)"}
             
             if champ_mastery_data
               table#comparison_table
@@ -78,7 +78,7 @@ block content
                         td
                           img.championAvatar(src="/images/champion/tiny/#{champ_mapping[val.championId].id}.png")
                         td.championName
-                          strong= champ_mapping[val.championId].name
+                          a(href="/champion/0/#{val.championId}")= champ_mapping[val.championId].name
                         td= val.s1_championRank && addCommas(val.s1_championRank)
                         td= val.s1_championLevel && addCommas(val.s1_championLevel)
                         td= val.s1_championPoints && addCommas(val.s1_championPoints)
@@ -93,7 +93,7 @@ block content
                         td
                           img.championAvatar(src="/images/champion/tiny/#{champ_mapping[val.championId].id}.png")
                         td.championName
-                          strong= champ_mapping[val.championId].name
+                          a(href="/champion/0/#{val.championId}")= champ_mapping[val.championId].name
                         td= val.s2_championRank && addCommas(val.s2_championRank)
                         td= val.s2_championLevel && addCommas(val.s2_championLevel)
                         td= val.s2_championPoints && addCommas(val.s2_championPoints)

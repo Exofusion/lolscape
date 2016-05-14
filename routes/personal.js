@@ -7,12 +7,12 @@ var champ_mapping = require('../resources/champ_mapping.json');
 
 router.get('/', function(req, res, next) {
   var summoner_name = req.query.summoner;
-  var summoner_region = 1;
+  var summoner_region = req.query.region;
   
-  if (summoner_name) {
+  if (summoner_name && summoner_region) {
     cache_layer.getSummonerDataByName(summoner_region, summoner_name, function(summoner_data) {
       if (summoner_data && summoner_data.id) {
-        return res.redirect('/personal/'+summoner_data.id);
+        return res.redirect('/personal/'+summoner_region+'/'+summoner_data.id);
       } else {
         // Summoner not found
         return res.render('error', { message: "The summoner name you entered could not be found.",
@@ -25,23 +25,25 @@ router.get('/', function(req, res, next) {
 });
 
 /* GET home page. */
-router.get('/:summoner_id', function(req, res, next) {
+router.get('/:region_id/:summoner_id', function(req, res, next) {
   var summoner_id = req.params.summoner_id;
-  var summoner_region = 1;
+  var summoner_region = req.params.region_id;
   
-  if (!summoner_id) {
+  if (!summoner_id || !(summoner_region > 0)) {
     return res.redirect('/');
   }
   
-  cache_layer.getTotalSummoners(0, function(total_summoners) {
+  cache_layer.getTotalSummoners(0, 0, function(total_summoners) {
     cache_layer.getSummonerDataById(summoner_region, summoner_id, function(summoner_data) {
       cache_layer.getMasteryEntriesById(summoner_region, summoner_data && summoner_data.id, function(champ_mastery_data) {
         compare_utils.parseAndSort(summoner_region, champ_mastery_data, function(champ_mastery_data) {
           champ_mastery_data = compare_utils.personalOrderByXP(champ_mastery_data);
           res.render('personal', { champ_mapping: champ_mapping,
                                    total_summoners: total_summoners,
+                                   summoner_region: summoner_region,
                                    summoner_data: summoner_data,
-                                   champ_mastery_data: champ_mastery_data });
+                                   champ_mastery_data: champ_mastery_data,
+                                   region_mapping: cache_layer.region_mapping });
         });
       });
     });

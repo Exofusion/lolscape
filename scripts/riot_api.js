@@ -16,7 +16,17 @@ var api_key = require('./api_key.json').api_key;
 
 // Map a region code to platform code
 // Example: platformLookup('na') => 'na1'
-var platform = { 'na': 'na1' };
+var platform = { 'na': 'na1',
+                 'br': 'br1',
+                 'eune': 'eun1',
+                 'euw': 'euw1',
+                 'jp': 'jp1',
+                 'kr': 'kr',
+                 'lan': 'la1',
+                 'las': 'la2',
+                 'oce': 'oc1',
+                 'tr': 'tr1',
+                 'ru': 'ru' };
 function platformLookup(region) {
 	return platform[region.toLowerCase()];
 }

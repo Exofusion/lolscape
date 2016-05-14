@@ -14,9 +14,12 @@ function compare(summoner1_region, summoner1_id, summoner2_region, summoner2_id,
         cache_layer.getMasteryEntriesById(summoner2_region, summoner2_data && summoner2_data.id, function(summoner2_mastery_data) {
           prepare(summoner1_region, summoner1_mastery_data, summoner2_region, summoner2_mastery_data, function(summoner1_parsed, summoner2_parsed) {
             var champ_mastery_data = comparisonOrderByXP(merge(summoner1_parsed, summoner2_parsed));
-            callback({ summoner1_data: summoner1_data,
+            callback({ summoner1_region: summoner1_region,
+                       summoner1_data: summoner1_data,
+                       summoner2_region: summoner2_region,
                        summoner2_data: summoner2_data,
-                       champ_mastery_data: champ_mastery_data });
+                       champ_mastery_data: champ_mastery_data,
+                       region_mapping: cache_layer.region_mapping });
           });
         });
       });
@@ -63,7 +66,7 @@ function parseAndSort(region_id, json, callback) {
   var summonerId = null;
   
   async.forEach(json, function(current, next) {
-    cache_layer.getChampRanking(current.championPoints, current.championId, function(champ_rank) {
+    cache_layer.getChampRanking(0, current.championPoints, current.championId, function(champ_rank) {
       if (summonerId === null) {
         summonerId = current.playerId;
       }
@@ -86,7 +89,7 @@ function parseAndSort(region_id, json, callback) {
       return obj1.championId - obj2.championId;
     });
     
-    cache_layer.getChampRanking(overallPoints, 0, function(overall_rank) {
+    cache_layer.getChampRanking(0, overallPoints, 0, function(overall_rank) {
       parsed_data.splice(0, 0, { championId: 0,
                                  championRank: overall_rank,
                                  championLevel: overallLevel,
