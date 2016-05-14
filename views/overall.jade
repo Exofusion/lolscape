@@ -14,7 +14,7 @@ block content
         .scroll-bgimg
           .scroll-content
               br
-              div #{addCommas(total_summoners)} total summoners
+              div #{addCommas(total_summoners)} total summoners #{overall_region > 0 ? 'on '+region_mapping[overall_region].toUpperCase() : 'globally'}
               br
               
               table#overall_table
