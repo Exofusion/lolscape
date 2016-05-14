@@ -97,9 +97,8 @@ function getChampRanking(region_id, champion_points, champion_id, callback) {
       */
       
       var query_string = 'SELECT COUNT(1)+1 AS champion_rank \
-                          FROM (SELECT 1 \
-                                FROM summoner_champ_mastery \
-                                WHERE champion_points > $1 AND champion_id = $2';
+                          FROM summoner_champ_mastery \
+                          WHERE champion_points > $1 AND champion_id = $2';
       var query_params = [champion_points, champion_id];
       
       if (region_id > 0) {
@@ -107,7 +106,7 @@ function getChampRanking(region_id, champion_points, champion_id, callback) {
         query_params.push(region_id);
       }
       
-      query_string += ') r;';
+      query_string += ';';
       
       client.query(query_string, query_params, function(err, result) {
         //call `done()` to release the client back to the pool
