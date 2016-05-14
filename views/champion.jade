@@ -19,7 +19,7 @@ block content
               
               table#overall_table
                 tr
-                  th.text-align-center(colspan="4") Highscores For #{champion_data.name} #{champion_region > 0 ? 'On '+region_mapping[champion_region].toUpperCase() : 'Globally'}
+                  th.text-align-center(colspan="4") #{champion_region > 0 ? region_mapping[champion_region].toUpperCase() : 'Global'} Highscores For #{champion_data.name}
                 tr
                   th.text-align-center #
                   th.text-align-left Summoner

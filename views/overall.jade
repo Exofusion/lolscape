@@ -19,7 +19,7 @@ block content
               
               table#overall_table
                 tr
-                  th.text-align-center(colspan="4") Overall Hiscores By #{page_name}
+                  th.text-align-center(colspan="4") Overall #{overall_region > 0 ? region_mapping[overall_region].toUpperCase() : 'Global'} Hiscores By #{page_name}
                 tr
                   th.text-align-center #
                   th.text-align-left Summoner
