@@ -92,3 +92,8 @@ Luckily this is where Node really shines.
 - Run "npm start"
 
 The local webserver should now be listening on http://localhost:3000
+
+If a Linux webserver is being used, and you would like to make the site public, run the following command:
+```
+sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 3000
+```
