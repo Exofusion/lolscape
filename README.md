@@ -42,7 +42,7 @@ To work out of the box, a new user needs to be added to PostgreSQL, username of 
 
 #### summoner_data
 ```
-CREATE TABLE public.summoner_data
+CREATE TABLE summoner_data
 (
   id integer NOT NULL,
   summoner_level smallint,
@@ -59,7 +59,7 @@ No serious indexing needed here for now, but with multi-region support a new ind
 
 #### summoner_champ_mastery
 ```
-CREATE TABLE public.summoner_champ_mastery
+CREATE TABLE summoner_champ_mastery
 (
   summoner_id integer NOT NULL,
   region_id smallint NOT NULL,
@@ -77,11 +77,11 @@ CREATE TABLE public.summoner_champ_mastery
 ```
 Here's where most of the data lies, all response data returned from the API during a summoner lookup is recorded here so we have a cached record.  The glue that holds this together is the following index:
 ```
-CREATE UNIQUE INDEX champion_rank
-  ON public.summoner_champ_mastery
+CREATE INDEX champion_rank
+  ON summoner_champ_mastery
   USING btree
   (champion_id, region_id, champion_points DESC NULLS LAST);
-ALTER TABLE public.summoner_champ_mastery CLUSTER ON champion_rank;
+ALTER TABLE summoner_champ_mastery CLUSTER ON champion_rank;
 ```
 The ordering of this index is extremely important for performance.  By ordering the descending champion point entries, partitioned by each champion_id, we get fast queries for the leaderboard lookups.  By saving our total values for each summoner's champion as champion 0, we also get extremely fast overall score lookup without needing to sum each entry on the fly.  Because this index is utilized so heavily, it's important to periodically run "CLUSTER summoner_champ_mastery;" so PostgreSQL can move around rows to the optimal locations and keep lookup times low.
 
