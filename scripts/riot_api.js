@@ -55,6 +55,9 @@ function handleResponse(error, response, body, callback) {
       } else if (parsed_json.status.status_code == 404) {
         console.log('[404] Not Found');
         return callback(null);
+      } else if (parsed_json.status.status_code != 200) {
+        console.log('['+parsed_json.status.status_code+'] Unexpected status code');
+        return callback(null);
       }
     }
   }
