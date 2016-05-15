@@ -3,10 +3,10 @@ var riot_api = require('../scripts/riot_api');
 var async = require('async');
 
 var region_id = process.argv[2];
+var current_id = process.argv[3] || 1;
 
 var summoner_batch = [];
 var summoner_count = 0;
-var current_id = 1;
 
 var max_summoner_id = 76510041;
 
@@ -23,7 +23,7 @@ function step() {
     step();
   } else {
     getSummonerDataById(region_id, summoner_batch.join(), function(summoner_data) {
-      console.log('[ '+summoner_count+' ]');
+      console.log('[ Region: '+region_id+' | Session: '+summoner_count+' | ID: '+current_id+']');
       step();
     });
     
