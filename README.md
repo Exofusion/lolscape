@@ -44,6 +44,7 @@ To work out of the box, a new user needs to be added to PostgreSQL, username of 
 ```
 CREATE TABLE summoner_data
 (
+  region_id smallint NOT NULL,
   id integer NOT NULL,
   summoner_level smallint,
   profile_icon_id smallint,
@@ -51,8 +52,7 @@ CREATE TABLE summoner_data
   revision_date bigint,
   name character varying(32),
   name_cleaned character varying(32),
-  region_id smallint NOT NULL,
-  CONSTRAINT summoner_data_pkey PRIMARY KEY (id, region_id)
+  CONSTRAINT summoner_data_pkey PRIMARY KEY (region_id, id)
 );
 ```
 No serious indexing needed here for now, but with multi-region support a new indexes may need to be implemented as needed.
@@ -61,18 +61,18 @@ No serious indexing needed here for now, but with multi-region support a new ind
 ```
 CREATE TABLE summoner_champ_mastery
 (
-  summoner_id integer NOT NULL,
+  champion_id smallint NOT NULL,
   region_id smallint NOT NULL,
+  summoner_id integer NOT NULL,
   champion_points integer,
   champion_points_until_next_level integer,
   champion_points_since_last_level integer,
-  champion_id smallint NOT NULL,
   champion_level smallint,
   chest_granted boolean,
   last_play_time bigint,
   highest_grade character varying,
   last_updated timestamp without time zone,
-  CONSTRAINT summoner_champ_mastery_pkey PRIMARY KEY (summoner_id, region_id, champion_id)
+  CONSTRAINT summoner_champ_mastery_pkey PRIMARY KEY (champion_id, region_id, summoner_id)
 );
 ```
 Here's where most of the data lies, all response data returned from the API during a summoner lookup is recorded here so we have a cached record.  The glue that holds this together is the following index:
