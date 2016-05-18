@@ -23,7 +23,7 @@ function step() {
     step();
   } else {
     getSummonerDataById(region_id, summoner_batch.join(), function(summoner_data) {
-      console.log('[ Region: '+region_id+' | Session: '+summoner_count+' | ID: '+current_id+']');
+      console.log('[Region: '+region_id+' | Session: '+summoner_count+' | ID: '+current_id+']');
       step();
     });
     

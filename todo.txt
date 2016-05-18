@@ -1,1 +1,5 @@
 - Show highest champion grade
+- Special character handling in summoner name lookup
+- Rework riot_api to have all request() logic in the helper function, to allow for retries on unexpected status codes
+- Database statistics page
+- Add regional rankings to personal hiscore pages

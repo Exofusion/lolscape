@@ -71,7 +71,7 @@ CREATE TABLE summoner_champ_mastery
   chest_granted boolean,
   last_play_time bigint,
   highest_grade character varying,
-  last_updated timestamp with time zone,
+  last_updated timestamp without time zone,
   CONSTRAINT summoner_champ_mastery_pkey PRIMARY KEY (summoner_id, region_id, champion_id)
 );
 ```
