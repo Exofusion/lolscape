@@ -16,10 +16,10 @@ router.get('/:region_id/:page_name', function(req, res, next) {
   var page_name;
   
   if (req.params.page_name === 'experience') {
-    order_by = 'overall_points';
+    order_by = 'champion_points';
     page_name = 'Experience';
   } else if (req.params.page_name === 'level') {
-    order_by = 'overall_level';
+    order_by = 'champion_level';
     page_name = 'Level';
   }
   

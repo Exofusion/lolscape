@@ -152,11 +152,9 @@ function getOverallHighscores(client, region_id, champion_id, order_by, callback
                              scm.champion_level AS overall_level,
                              sd.name,
                              sd.profile_icon_id
-                      FROM summoner_champ_mastery scm
-                      LEFT JOIN summoner_data sd
-                                ON scm.summoner_id = sd.id
-                                AND scm.region_id = sd.region_id
-                      WHERE champion_id=$1`;
+                      FROM (SELECT *
+                            FROM summoner_champ_mastery
+                            WHERE champion_id=$1`;
   var query_params = [champion_id];
   
   if (region_id > 0) {
@@ -164,8 +162,11 @@ function getOverallHighscores(client, region_id, champion_id, order_by, callback
     query_params.push(region_id);
   }
   
-  query_string += 'ORDER BY '+order_by+' DESC NULLS LAST LIMIT 100;';
-  
+  query_string += ` ORDER BY ${order_by} DESC NULLS LAST LIMIT 100) scm
+                    LEFT JOIN summoner_data sd
+                        ON scm.summoner_id = sd.id
+                        AND scm.region_id = sd.region_id;`;
+
   client.query(query_string, query_params, function(err, result) {
     if(err) {
       return console.error('error running query', err);
