@@ -1,19 +1,11 @@
 var express = require('express');
 var router = express.Router();
+var pg = require('pg');
+var connection_string = require('../scripts/db_connection.js').connection_string;
 var compare_utils = require('../scripts/compare_utils');
 var cache_layer = require('../scripts/cache_layer');
 
 var champ_mapping = require('../resources/champ_mapping.json');
-
-function renderComparison(comparison_data, res) {
-  if (!comparison_data) { comparison_data = {} };
-  
-  cache_layer.getTotalSummoners(0, 0, function(total_summoners) {
-    comparison_data.champ_mapping = champ_mapping;
-    comparison_data.total_summoners = total_summoners;
-    res.render('compare', comparison_data);
-  });
-}
 
 router.get('/', function(req, res,next) {
   var summoner1 = cache_layer.cleanName(req.query.summoner1);
@@ -22,14 +14,17 @@ router.get('/', function(req, res,next) {
   var summoner2_region = req.query.summoner2_region;
   
   if ((summoner1 && summoner1_region > 0) || (summoner2 && summoner2_region > 0)) {
-    cache_layer.getSummonerDataByName(summoner1_region, summoner1, function(summoner1_data) {
-      cache_layer.getSummonerDataByName(summoner2_region, summoner2, function(summoner2_data) {
-        if (summoner1_data || summoner2_data) {
-          return res.redirect('/compare/'+summoner1_region+'/'+(summoner1_data && summoner1_data.id)+'/'+summoner2_region+'/'+(summoner2_data && summoner2_data.id));
-        } else {
-          // Neither summoner found
-          return res.redirect('/');
-        }
+    pg.connect(connection_string, function(err, client, done) {
+      cache_layer.getSummonerDataByName(client, summoner1_region, summoner1, function(summoner1_data) {
+        cache_layer.getSummonerDataByName(client, summoner2_region, summoner2, function(summoner2_data) {
+          done();
+          if (summoner1_data || summoner2_data) {
+            return res.redirect('/compare/'+summoner1_region+'/'+(summoner1_data && summoner1_data.id)+'/'+summoner2_region+'/'+(summoner2_data && summoner2_data.id));
+          } else {
+            // Neither summoner found
+            return res.redirect('/');
+          }
+        });
       });
     });
   } else {
@@ -49,13 +44,17 @@ router.get('/:summoner1_region/:summoner1_id/:summoner2_region/:summoner2_id', f
   }
   
   // Lookup by Summoner ID instead
-  compare_utils.compare(summoner1_region, summoner1_id, summoner2_region, summoner2_id, function (comparison_data) {
-    renderComparison(comparison_data, res);
+  pg.connect(connection_string, function(err, client, done) {
+    compare_utils.compare(client, summoner1_region, summoner1_id, summoner2_region, summoner2_id, function (comparison_data) {
+      if (!comparison_data) { comparison_data = {} };
+      cache_layer.getTotalSummoners(client, 0, 0, function(total_summoners) {
+        done();
+        comparison_data.champ_mapping = champ_mapping;
+        comparison_data.total_summoners = total_summoners;
+        res.render('compare', comparison_data);
+      });
+    });
   });
-});
-
-router.get('/', function(req, res, next) {
-  renderComparison(null, res);
 });
 
 module.exports = router;

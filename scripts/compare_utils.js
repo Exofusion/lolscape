@@ -7,12 +7,12 @@ exports.compare = compare;
 exports.parseAndSort = parseAndSort;
 exports.personalOrderByXP = personalOrderByXP;
 
-function compare(summoner1_region, summoner1_id, summoner2_region, summoner2_id, callback) {
-  cache_layer.getSummonerDataById(summoner1_region, summoner1_id, function(summoner1_data) {
-    cache_layer.getSummonerDataById(summoner2_region, summoner2_id, function(summoner2_data) {
-      cache_layer.getMasteryEntriesById(summoner1_region, summoner1_data && summoner1_data.id, function(summoner1_mastery_data) {
-        cache_layer.getMasteryEntriesById(summoner2_region, summoner2_data && summoner2_data.id, function(summoner2_mastery_data) {
-          prepare(summoner1_region, summoner1_mastery_data, summoner2_region, summoner2_mastery_data, function(summoner1_parsed, summoner2_parsed) {
+function compare(client, summoner1_region, summoner1_id, summoner2_region, summoner2_id, callback) {
+  cache_layer.getSummonerDataById(client, summoner1_region, summoner1_id, function(summoner1_data) {
+    cache_layer.getSummonerDataById(client, summoner2_region, summoner2_id, function(summoner2_data) {
+      cache_layer.getMasteryEntriesById(client, summoner1_region, summoner1_data && summoner1_data.id, function(summoner1_mastery_data) {
+        cache_layer.getMasteryEntriesById(client, summoner2_region, summoner2_data && summoner2_data.id, function(summoner2_mastery_data) {
+          prepare(client, summoner1_region, summoner1_mastery_data, summoner2_region, summoner2_mastery_data, function(summoner1_parsed, summoner2_parsed) {
             var champ_mastery_data = comparisonOrderByXP(merge(summoner1_parsed, summoner2_parsed));
             callback({ summoner1_region: summoner1_region,
                        summoner1_data: summoner1_data,
@@ -53,7 +53,7 @@ function comparisonOrderByXP(comparison_mastery_data, callback) {
   }
 }
 
-function parseAndSort(region_id, json, callback) {
+function parseAndSort(client, region_id, json, callback) {
   if (!region_id || !json) {
     return callback(null);
   }
@@ -66,7 +66,7 @@ function parseAndSort(region_id, json, callback) {
   var summonerId = null;
   
   async.forEach(json, function(current, next) {
-    cache_layer.getChampRanking(0, current.championPoints, current.championId, function(champ_rank) {
+    cache_layer.getChampRanking(client, 0, current.championPoints, current.championId, function(champ_rank) {
       if (summonerId === null) {
         summonerId = current.playerId;
       }
@@ -89,7 +89,7 @@ function parseAndSort(region_id, json, callback) {
       return obj1.championId - obj2.championId;
     });
     
-    cache_layer.getChampRanking(0, overallPoints, 0, function(overall_rank) {
+    cache_layer.getChampRanking(client, 0, overallPoints, 0, function(overall_rank) {
       parsed_data.splice(0, 0, { championId: 0,
                                  championRank: overall_rank,
                                  championLevel: overallLevel,
@@ -169,9 +169,9 @@ function merge(summoner1_parsed, summoner2_parsed) {
 }
 
 // This really only exists to try to deal with callback hell
-function prepare(summoner1_region, summoner1_data, summoner2_region, summoner2_data, callback) {
-  parseAndSort(summoner1_region, summoner1_data, function(summoner1_parsed) {
-    parseAndSort(summoner2_region, summoner2_data, function(summoner2_parsed) {
+function prepare(client, summoner1_region, summoner1_data, summoner2_region, summoner2_data, callback) {
+  parseAndSort(client, summoner1_region, summoner1_data, function(summoner1_parsed) {
+    parseAndSort(client, summoner2_region, summoner2_data, function(summoner2_parsed) {
       callback(summoner1_parsed, summoner2_parsed);
     });
   });

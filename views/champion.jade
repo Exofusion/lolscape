@@ -31,7 +31,7 @@ block content
                       strong= addCommas(val.rank)
                     td.text-align-left
                       img.summonerProfileIcon(src='http://ddragon.leagueoflegends.com/cdn/6.9.1/img/profileicon/#{val.profile_icon_id}.png')
-                      a.summonerName(href="/personal/#{val.region_id}/#{val.summoner_id}") (#{region_mapping[val.region_id].toUpperCase()}) #{val.name}
+                      a.summonerName(href="/personal/#{val.region_id}/#{val.summoner_id}") (#{region_mapping[val.region_id].slice(0,3).toUpperCase()}) #{val.name}
                     td= addCommas(val.overall_level)
                     td= addCommas(val.overall_points)
           br

@@ -1,0 +1,1 @@
+exports.connection_string = process.env.DATABASE_URL || 'postgres://pguser:root@localhost:5432/rac2016';
