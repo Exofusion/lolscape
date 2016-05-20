@@ -151,8 +151,7 @@ function getOverallHighscores(client, region_id, champion_id, order_by, callback
                              scm.champion_points AS overall_points,
                              scm.champion_level AS overall_level,
                              sd.name,
-                             sd.profile_icon_id,
-                             ROW_NUMBER() OVER () AS rank
+                             sd.profile_icon_id
                       FROM summoner_champ_mastery scm
                       LEFT JOIN summoner_data sd
                                 ON scm.summoner_id = sd.id
@@ -170,6 +169,10 @@ function getOverallHighscores(client, region_id, champion_id, order_by, callback
   client.query(query_string, query_params, function(err, result) {
     if(err) {
       return console.error('error running query', err);
+    }
+    
+    for (var idx in result.rows) {
+      result.rows[idx].rank = parseInt(idx)+1;
     }
     
     callback(result.rows);
