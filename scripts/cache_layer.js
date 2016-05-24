@@ -14,12 +14,10 @@ var DEBUG = false;
 exports.cleanName = cleanName;
 exports.getSummonerDataByName = getSummonerDataByName;
 exports.getSummonerDataById = getSummonerDataById;
-exports.getMasteryEntriesByName = getMasteryEntriesByName;
 exports.getMasteryEntriesById = getMasteryEntriesById;
 exports.getChampRanking = getChampRanking;
 exports.getTotalSummoners = getTotalSummoners;
 exports.getOverallHighscores = getOverallHighscores;
-exports.getSummonerDataFromDB = getSummonerDataFromDB;
 exports.updateChampMasteryCache = updateChampMasteryCache;
 exports.updateSummonerDataCache = updateSummonerDataCache;
 
@@ -44,35 +42,56 @@ function cleanName(name) {
   return name.toLowerCase().replace(/\s/g, '');
 }
 
+function formatDatabaseToAPI(data) {
+  data.summonerLevel = data.summoner_level;
+  data.profileIconId = data.profile_icon_id;
+  data.revisionDate = data.revision_date;
+  data.championId = data.champion_id;
+  data.championLevel = data.champion_level;
+  data.championPoints = data.champion_points;
+}
+
 // Fetch and cache the summoner JSON data using a summoner name
 function getSummonerDataByName(client, region_id, summoner_name, callback) {
   if(DEBUG) console.log('getSummonerDataByName()');
-  getSummonerDataByNameFromAPI(client, region_id, summoner_name, function(summoner_data) { callback(summoner_data); });
+  getSummonerDataByNameFromAPI(client, region_id, summoner_name, function(summoner_data) {
+    if (summoner_data == null) {
+      getSummonerDataByNameFromCache(client, region_id, summoner_name, function(summoner_data) {
+        callback(formatDatabaseToAPI(summoner_data));
+      });
+    } else {
+      callback(summoner_data);
+    }
+  });
 }
 
 // Fetch and cache the summoner JSON data using a summoner ID
 function getSummonerDataById(client, region_id, summoner_id, callback) {
   if(DEBUG) console.log('getSummonerDataById()');
-  getSummonerDataByIdFromAPI(client, region_id, summoner_id, function(summoner_data) { callback(summoner_data); });
-}
-
-// Fetch and cache summoner entries for a summoner name
-function getMasteryEntriesByName(client, region_id, summoner_name, callback) {
-  if(DEBUG) console.log('getSummonerEntriesByName()');
-  if (summoner_name.length > 0) {
-    getSummonerId(client, region_id, summoner_name, function(summoner_id) {
-      getMasteryEntriesById(client, region_id, summoner_id, callback);
-    });
-  } else {
-    callback(null);
-  }
+  getSummonerDataByIdFromAPI(client, region_id, summoner_id, function(summoner_data) {
+    if (summoner_data == null) {
+      getSummonerDataByIdFromCache(client, region_id, summoner_id, function(summoner_data) {
+        callback(formatDatabaseToAPI(summoner_data));
+      });
+    } else {
+      callback(summoner_data);
+    }
+  });
 }
 
 // Fetch and cache summoner entries for a summoner ID
 function getMasteryEntriesById(client, region_id, summoner_id, callback) {
   if(DEBUG) console.log('getMasteryEntriesById()');
   if (summoner_id != null) {
-    getChampMasteryDataFromAPI(client, region_id, summoner_id, function(champ_mastery_data) { callback(champ_mastery_data); });
+    getChampMasteryDataFromAPI(client, region_id, summoner_id, function(champ_mastery_data) {
+      if (champ_mastery_data == null) {
+        getChampMasteryDataFromAPI(client, region_id, summoner_id, function(champ_mastery_data) {
+          callback(formatDatabaseToAPI(champ_mastery_data));
+        });
+      } else {
+        callback(champ_mastery_data);
+      }
+    });
   } else {
     callback(null);
   }
@@ -180,22 +199,6 @@ function getOverallHighscores(client, region_id, champion_id, order_by, callback
   });
 }
 
-// Call to manually skip fetching from the API for summoner data, and only use what's available in the local database
-function getSummonerDataFromDB(client, region_id, summoner_id, callback) {
-  if(DEBUG) console.log('getSummonerDataFromDB()');
-  client.query('SELECT * FROM summoner_data WHERE region_id=$1 AND id=$2;', [region_id, summoner_id], function(err, result) {
-    if(err) {
-      return console.error('error running query', err);
-    }
-    
-    if (result.rowCount > 0) {
-      callback(result.rows[0]);
-    } else {
-      callback(null);
-    }
-  });
-}
-
 // Call to manually fetch summoner data from the API, and update the local database with the response afterwards
 function getChampMasteryDataFromAPI(client, region_id, summoner_id, callback) {
   if(DEBUG) console.log('getChampMasteryDataFromAPI()');
@@ -240,6 +243,55 @@ function getSummonerDataByIdFromAPI(client, region_id, summoner_id, callback) {
       } else {
         console.log('summoner response had no id');
       }
+    }
+  });
+}
+
+function getChampMasteryDataFromCache(client, region_id, summoner_id, callback) {
+  if(DEBUG) console.log('getSummonerDataByIdFromCache()');
+  var query_string = `SELECT * FROM summoner_champ_mastery
+                      WHERE region_id=$1 AND summoner_id=$2;`
+
+  var query_params = [region_id, summoner_id];
+
+  client.query(query_string, query_params, function(err, result) {
+    if (result.rows > 0) {
+      callback(result.data);
+    } else {
+      callback(null);
+    }
+  });
+}
+
+function getSummonerDataByNameFromCache(client, region_id, summoner_name, callback) {
+  if(DEBUG) console.log('getSummonerDataByIdFromCache()');
+  var summoner_name_cleaned = cleanName(summoner_name);
+  var query_string = `SELECT * FROM summoner_data
+                      WHERE region_id=$1 AND name_cleaned=$2;`
+
+  var query_params = [region_id, summoner_name_cleaned];
+
+  client.query(query_string, query_params, function(err, result) {
+    if (result.rows > 0) {
+      callback(result.data);
+    } else {
+      callback(null);
+    }
+  });
+}
+
+function getSummonerDataByIdFromCache(client, region_id, summoner_id, callback) {
+  if(DEBUG) console.log('getSummonerDataByIdFromCache()');
+  var query_string = `SELECT * FROM summoner_data
+                      WHERE region=$1 AND id=$2;`
+
+  var query_params = [region_id, summoner_id];
+
+  client.query(query_string, query_params, function(err, result) {
+    if (result.rows > 0) {
+      callback(result.data);
+    } else {
+      callback(null);
     }
   });
 }
